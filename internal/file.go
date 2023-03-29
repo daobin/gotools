@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"errors"
 	"io/fs"
 	"os"
 	"path"
@@ -10,7 +9,7 @@ import (
 
 type fileTool struct{}
 
-// CreateDir 创建目录（可创建多级）
+// CreateDir 创建目录（不存在时创建，且可创建多级）
 // @dirname 目录名
 // @mode 目录权限
 func (receiver fileTool) CreateDir(dirname string, mode fs.FileMode) error {
@@ -19,10 +18,10 @@ func (receiver fileTool) CreateDir(dirname string, mode fs.FileMode) error {
 		if os.IsNotExist(err) {
 			err = os.MkdirAll(dirname, mode)
 			if err != nil {
-				return errors.New("目录创建失败：" + err.Error())
+				return err
 			}
 		} else {
-			return errors.New("目录错误：" + err.Error())
+			return err
 		}
 	}
 
@@ -39,10 +38,11 @@ func (receiver fileTool) GetFileExt(filename string) string {
 // @filename 文件名
 // @validExt 有效的文件格式
 func (receiver fileTool) CheckFileExtValid(filename string, validExt []string) bool {
-	fileExt := strings.ToLower(path.Ext(filename))
+	fileExt := strings.ToLower(strings.Trim(path.Ext(filename), "."))
 	validExt = Slice.ToLower(validExt)
 
 	for _, ext := range validExt {
+		ext = strings.Trim(ext, ".")
 		if ext == fileExt {
 			return true
 		}
