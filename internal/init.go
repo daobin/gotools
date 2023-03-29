@@ -1,6 +1,7 @@
 package internal
 
 var (
-	File  = new(fileTool)
 	Slice = new(sliceTool)
+	File  = new(fileTool)
+	Excel = new(excelTool)
 )
