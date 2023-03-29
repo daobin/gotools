@@ -1,7 +1,8 @@
 package gotools
 
+import "github.com/daobin/gotools/internal"
+
 var (
-	SliceOpt = sliceOpt{}
-	TimeOpt  = timeOpt{}
-	JsonOpt  = jsonOpt{}
+	File  = internal.File
+	Slice = internal.Slice
 )
