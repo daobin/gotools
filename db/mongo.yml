@@ -1,0 +1,7 @@
+mongodb:
+  tags: dev
+  dev:
+    url: mongodb://xxx:xxx@127.0.0.1:2222/dev
+    dbName: dev
+    pool:
+      limit: 10
