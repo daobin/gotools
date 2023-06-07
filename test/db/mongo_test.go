@@ -2,7 +2,7 @@ package db
 
 import (
 	"fmt"
-	"github.com/daobin/gotools/db"
+	"github.com/daobin/gotools/internal"
 	"gopkg.in/mgo.v2/bson"
 	"os"
 	"path/filepath"
@@ -34,18 +34,18 @@ func TestMongoDB(t *testing.T) {
 			}
 		}
 
-		err = db.Mongo.Init(ymlFile)
+		err = internal.DB.Mongo.Init(ymlFile)
 		if err != nil {
 			t.Error(err)
 			return
 		}
 
-		conn, err := db.Mongo.GetConn("dev")
+		conn, err := internal.DB.Mongo.GetConn("dev")
 		if err != nil {
 			t.Error(err)
 			return
 		}
-		defer db.Mongo.CloseCurrentConn(conn)
+		defer internal.DB.Mongo.CloseCurrentConn(conn)
 
 		dataList := make([]testData, 0)
 		err = conn.C("ecs_disk").Find(bson.M{}).All(&dataList)

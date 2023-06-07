@@ -13,6 +13,7 @@ type fileTool struct{}
 // @dirname 目录名
 // @mode 目录权限
 func (receiver fileTool) CreateDir(dirname string, mode fs.FileMode) error {
+
 	_, err := os.Stat(dirname)
 	if err != nil {
 		if os.IsNotExist(err) {

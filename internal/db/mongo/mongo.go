@@ -39,6 +39,7 @@ func (d *DB) Init(ymlFile string) error {
 		d.conf = nil
 		return err
 	}
+
 	tags := strings.Split(d.conf.String("mongodb.tags"), ",")
 	if len(tags) > 0 {
 		d.Pools = make(map[string]*pool, len(tags))
