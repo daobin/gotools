@@ -11,11 +11,10 @@ import (
 
 func TestMongoDB(t *testing.T) {
 	type testData struct {
-		Id     bson.ObjectId `json:"id" bson:"_id"`
-		DiskId string        `json:"diskId" bson:"diskId"` // 磁盘ID
-		Name   string        `json:"name" bson:"name"`     // 磁盘名称
-		Type   string        `json:"type" bson:"type"`     // 磁盘类型
-		Size   int           `json:"size" bson:"size"`     // 磁盘大小，单位GB
+		DiskId string `json:"diskId" bson:"diskId"` // 磁盘ID
+		Name   string `json:"name" bson:"name"`     // 磁盘名称
+		Type   string `json:"type" bson:"type"`     // 磁盘类型
+		Size   int    `json:"size" bson:"size"`     // 磁盘大小，单位GB
 	}
 
 	t.Run("MongoDB Option Test >>>", func(t *testing.T) {
@@ -40,12 +39,12 @@ func TestMongoDB(t *testing.T) {
 			return
 		}
 
-		conn, err := internal.DB.Mongo.GetConn("dev")
+		conn, err := internal.DB.Mongo.Get("dev")
 		if err != nil {
 			t.Error(err)
 			return
 		}
-		defer internal.DB.Mongo.CloseCurrentConn(conn)
+		defer internal.DB.Mongo.CloseCurrent(conn)
 
 		dataList := make([]testData, 0)
 		err = conn.C("ecs_disk").Find(bson.M{}).All(&dataList)

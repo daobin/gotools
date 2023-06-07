@@ -1,0 +1,9 @@
+redis:
+  tags: dev
+  dev:
+    host: xxx
+    port: xxx
+    auth: xxx
+    dbName: xxx
+    pool:
+      limit: 10

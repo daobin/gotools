@@ -1,7 +1,7 @@
-mongodb:
+mongo:
   tags: dev
   dev:
-    url: mongodb://xxx:xxx@127.0.0.1:2222/dev
-    dbName: dev
+    url: mongodb://[username]:[password]@[ip]:[port]/[dbName]
+    dbName: [dbName]
     pool:
       limit: 10

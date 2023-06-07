@@ -1,0 +1,8 @@
+mysql:
+  tags: dev
+  dev:
+    url: [username]:[password]@tcp([ip]:[port])/[dbName]?charset=utf8mb4&parseTime=True&loc=Local
+    pool:
+      limit: 10
+      lifetimeMinute: 60
+      timeoutSecond: 60
