@@ -55,7 +55,7 @@ func (d *DB) Init(ymlFile string) error {
 func (d *DB) build(tag string) error {
 	url := d.conf.String("mysql." + tag + ".url")
 	if url == "" {
-		return errors.New("MySql Build Failed: [" + tag + "] Url cannot be empty")
+		return errors.New("MySql Build Failed: [" + tag + "] Url Invalid")
 	}
 
 	conn, err := gorm.Open(mysql.Open(url))
@@ -63,27 +63,35 @@ func (d *DB) build(tag string) error {
 		return errors.New("MySql Build Failed: " + err.Error())
 	}
 
-	d.Pools[tag] = conn
-	d.Tags = append(d.Tags, tag)
+	sqlDB, _ := d.Pools[tag].DB()
+	if err = sqlDB.Ping(); err != nil {
+		_ = sqlDB.Close()
+		return errors.New("MySql Build Failed: " + err.Error())
+	}
 
 	// 连接池支持
-	pLimit := d.conf.Int("mysql." + tag + ".pool.limit")
-	if pLimit > 1 {
+	connMax := d.conf.Int("mysql." + tag + ".pool.max")
+	if connMax > 1 {
 		sqlDB, _ := conn.DB()
-		sqlDB.SetMaxOpenConns(pLimit)
-		sqlDB.SetMaxIdleConns(pLimit * 2)
+
 		lifetimeMinute := d.conf.Int64("mysql." + tag + ".pool.lifetimeMinute")
 		if lifetimeMinute <= 0 {
 			lifetimeMinute = 60
 		}
-		sqlDB.SetConnMaxLifetime(time.Duration(lifetimeMinute) * time.Second)
+		sqlDB.SetConnMaxLifetime(time.Duration(lifetimeMinute) * time.Minute)
 
 		timeoutSecond := d.conf.Int64("mysql." + tag + ".pool.timeoutSecond")
 		if timeoutSecond <= 0 {
 			timeoutSecond = 60
 		}
-		sqlDB.SetConnMaxIdleTime(time.Duration(timeoutSecond) * time.Minute)
+		sqlDB.SetConnMaxIdleTime(time.Duration(timeoutSecond) * time.Second)
+
+		sqlDB.SetMaxIdleConns(connMax * 2)
+		sqlDB.SetMaxOpenConns(connMax)
 	}
+
+	d.Pools[tag] = conn
+	d.Tags = append(d.Tags, tag)
 
 	return nil
 }
@@ -103,23 +111,12 @@ func (d *DB) check(tag string) error {
 		}
 	}
 
-	sqlDB, _ := d.Pools[tag].DB()
-	if sqlDB.Ping() != nil {
-		_ = sqlDB.Close()
-		delete(d.Pools, tag)
-
-		err := d.build(tag)
-		if err != nil {
-			return errors.New("MySql Check Failed: [" + tag + "] " + err.Error())
-		}
-	}
-
 	return nil
 }
 
 func (d *DB) Get(tag string) (*gorm.DB, error) {
 	if tag == "" {
-		return nil, errors.New("MySql Get Failed: Tag cannot be empty")
+		return nil, errors.New("MySql Get Failed: Tag Invalid")
 	}
 
 	err := d.check(tag)

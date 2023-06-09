@@ -3,7 +3,8 @@ redis:
   dev:
     host: xxx
     port: xxx
-    auth: xxx
-    dbName: xxx
+    password: xxx
+    dbName: 0
     pool:
-      limit: 10
+      min: 10
+      max: 10

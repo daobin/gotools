@@ -4,4 +4,5 @@ mongo:
     url: mongodb://[username]:[password]@[ip]:[port]/[dbName]
     dbName: [dbName]
     pool:
-      limit: 10
+      min: 2
+      max: 10

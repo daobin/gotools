@@ -58,27 +58,27 @@ func (d *DB) Init(ymlFile string) error {
 func (d *DB) build(tag string) error {
 	url := d.conf.String("mongo." + tag + ".url")
 	if url == "" {
-		return errors.New("MongoDB Build Failed: [" + tag + "] Url cannot be empty")
+		return errors.New("MongoDB Build Failed: [" + tag + "] Url Invalid")
 	}
 
 	conn, err := mgo.Dial(url)
 	if err != nil {
 		return errors.New("MongoDB Build Failed: " + err.Error())
 	}
-	dbName := d.conf.String("mongo." + tag + ".dbName")
-	if dbName == "" {
-		return errors.New("MongoDB Build Failed: [" + tag + "] DB Name cannot be empty")
+
+	if err = d.Pools[tag].conn.Ping(); err != nil {
+		return errors.New("MongoDB Build Failed: " + err.Error())
+	}
+
+	// 连接池支持
+	connMax := d.conf.Int("mongo." + tag + ".pool.max")
+	if connMax > 1 {
+		conn.SetPoolLimit(connMax)
+		conn.SetMode(mgo.Monotonic, true)
 	}
 
 	d.Pools[tag] = &pool{conn: conn}
 	d.Tags = append(d.Tags, tag)
-
-	// 连接池支持
-	pLimit := d.conf.Int("mongo." + tag + ".pool.limit")
-	if pLimit > 1 {
-		conn.SetPoolLimit(pLimit)
-		conn.SetMode(mgo.Monotonic, true)
-	}
 
 	return nil
 }
@@ -98,22 +98,12 @@ func (d *DB) check(tag string) error {
 		}
 	}
 
-	if d.Pools[tag].conn.Ping() != nil {
-		d.Pools[tag].conn.Close()
-		delete(d.Pools, tag)
-
-		err := d.build(tag)
-		if err != nil {
-			return errors.New("MongoDB Check Failed: [" + tag + "] " + err.Error())
-		}
-	}
-
 	return nil
 }
 
 func (d *DB) Get(tag string) (*mgo.Database, error) {
 	if tag == "" {
-		return nil, errors.New("MongoDB Get Failed: Tag cannot be empty")
+		return nil, errors.New("MongoDB Get Failed: Tag Invalid")
 	}
 
 	err := d.check(tag)
