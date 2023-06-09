@@ -14,6 +14,5 @@ var (
 		Redis: new(redis.DB),
 	}
 
-	Slice = new(sliceTool)
-	File  = new(fileTool)
+	File = new(fileTool)
 )

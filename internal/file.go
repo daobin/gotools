@@ -39,11 +39,13 @@ func (receiver fileTool) GetFileExt(filename string) string {
 // @filename 文件名
 // @validExt 有效的文件格式
 func (receiver fileTool) CheckFileExtValid(filename string, validExt []string) bool {
-	fileExt := strings.ToLower(strings.Trim(path.Ext(filename), "."))
-	validExt = Slice.ToLower(validExt)
+	if len(validExt) == 0 {
+		return false
+	}
 
+	fileExt := strings.ToLower(strings.Trim(path.Ext(filename), "."))
 	for _, ext := range validExt {
-		ext = strings.Trim(ext, ".")
+		ext = strings.ToLower(strings.Trim(ext, "."))
 		if ext == fileExt {
 			return true
 		}
