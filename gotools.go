@@ -5,7 +5,9 @@ import (
 )
 
 var (
-	DB    = internal.DB
-	File  = internal.File
-	Slice = internal.Slice
+	// DB 数据库
+	DB = internal.DB
+
+	// File 文件操作
+	File = internal.File
 )

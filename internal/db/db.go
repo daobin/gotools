@@ -6,6 +6,7 @@ import (
 	"github.com/daobin/gotools/internal/db/redis"
 )
 
+// Tool 数据库工具
 type Tool struct {
 	Mongo *mongo.DB
 	Mysql *mysql.DB
