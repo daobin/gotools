@@ -66,7 +66,7 @@ func (d *DB) build(tag string) error {
 		return errors.New("MongoDB Build Failed: " + err.Error())
 	}
 
-	if err = d.Pools[tag].conn.Ping(); err != nil {
+	if err = conn.Ping(); err != nil {
 		return errors.New("MongoDB Build Failed: " + err.Error())
 	}
 

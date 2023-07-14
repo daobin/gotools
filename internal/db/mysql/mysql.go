@@ -63,7 +63,7 @@ func (d *DB) build(tag string) error {
 		return errors.New("MySql Build Failed: " + err.Error())
 	}
 
-	sqlDB, _ := d.Pools[tag].DB()
+	sqlDB, _ := conn.DB()
 	if err = sqlDB.Ping(); err != nil {
 		_ = sqlDB.Close()
 		return errors.New("MySql Build Failed: " + err.Error())
